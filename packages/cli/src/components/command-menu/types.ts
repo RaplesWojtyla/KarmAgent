@@ -1,6 +1,10 @@
+import type { DialogContextValue } from "../../providers/dialog"
+import type { ToastContextValue } from "../../providers/toast"
+
 export type CommandContext = {
-    // new: () => void
     exit: () => void
+    toast: ToastContextValue
+    dialog: DialogContextValue
 }
 
 export type Command = {
