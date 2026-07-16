@@ -3,6 +3,7 @@ import { useMemo, useRef, useState, type RefObject } from "react"
 import type { Command } from "./types"
 import { getFilteredCommands } from "./filter-commands"
 import { useKeyboard } from "@opentui/react"
+import { useKeyboardLayer } from "../../providers/keyboard-layer"
 
 
 type UseCommandMenuReturn = {
@@ -20,7 +21,8 @@ export function useCommandMenu(): UseCommandMenuReturn {
     const [textValue, setTextValue] = useState("")
     const [selectedIndex, setSelectedIndex] = useState(0)
     const [showCommandMenu, setShowCommandMenu] = useState(false)
-    
+    const { push, pop, isTopLayer } = useKeyboardLayer()
+
     const scrollRef = useRef<ScrollBoxRenderable>(null)
     const commandQuery = showCommandMenu && textValue.startsWith("/") ? textValue.slice(1) : ""
 
@@ -39,8 +41,15 @@ export function useCommandMenu(): UseCommandMenuReturn {
         const prefix = text.startsWith("/") ? text.slice(1) : null
         if (prefix !== null && !prefix.includes(" ")) {
             setShowCommandMenu(true)
+
+            push("command-menu", () => {
+                setShowCommandMenu(false)
+                pop("command-menu")
+                return true
+            })
         } else {
             setShowCommandMenu(false)
+            pop("command-menu")
         }
     }
 
@@ -48,6 +57,7 @@ export function useCommandMenu(): UseCommandMenuReturn {
         const cmd = filteredCommands[index]
         if (cmd) {
             setShowCommandMenu(false)
+            pop("command-menu")
         }
 
         return cmd
@@ -55,11 +65,12 @@ export function useCommandMenu(): UseCommandMenuReturn {
 
     // Deteksi tombol panah atas dan bawah
     useKeyboard((key) => {
-        if (!showCommandMenu) return
+        if (!showCommandMenu || !isTopLayer("command-menu")) return
 
         if (key.name === "escape") {
             key.preventDefault()
             setShowCommandMenu(false)
+            pop("command-menu")
         } else if (key.name === "up") {
             key.preventDefault()
             setSelectedIndex(prev => {
@@ -75,7 +86,7 @@ export function useCommandMenu(): UseCommandMenuReturn {
         } else if (key.name === "down") {
             key.preventDefault()
             setSelectedIndex(prev => {
-                if (filteredCommands.length === 0) return 0 
+                if (filteredCommands.length === 0) return 0
 
                 const newIndex = Math.min(filteredCommands.length - 1, prev + 1)
 
