@@ -83,7 +83,7 @@ export function InputBar({ onSubmit, disabled = false }: Props) {
         } else {
             textarea.insertText(command.value + " ")
         }
-    }, [renderer])
+    }, [renderer, toast, dialog])
 
     const handleSubmit = useCallback(() => {
         if (disabled) return
