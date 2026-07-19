@@ -571,4 +571,4 @@ export const THEMES: Theme[] = [
     },
 ]
 
-export const DEFAULT_THEME = THEMES.find(t => t.name === "Obsidian")!
+export const DEFAULT_THEME = THEMES.find(t => t.name === "Obsidian") as Theme
