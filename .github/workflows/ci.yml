@@ -36,9 +36,9 @@ jobs:
       - name: Typecheck
         run: bun x tsc --project packages/cli/tsconfig.json
 
-      # Linter (biome / eslint)
-      # - name: Lint
-      #   run: bun run lint
+      # Linter (eslint)
+      - name: Lint
+        run: bun run lint
 
       # Test
       # - name: Test
